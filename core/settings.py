@@ -69,7 +69,7 @@ MAIL_VALITADOR = [
     not MAIL_SSL,
     MAIL_TLS not in {'0', '1'},
     MAIL_SSL not in {'0', '1'},
-    len([x for x in MAIL_PORT if x.isdigit()]) == len(MAIL_PORT),
+    len([x for x in MAIL_PORT if x.isdigit()]) != len(MAIL_PORT),
 ]
 if any(MAIL_VALITADOR):
     raise EnvException('Missing / wrong MAIL_*.')
