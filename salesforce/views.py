@@ -18,7 +18,8 @@ class MainSalesForceViewSet(viewsets.ModelViewSet):
     serializer_class = SalesForceSerializer
     queryset = SalesForce.objects.all().order_by('-creation_timestamp')
     permission_classes = [
-        IsAuthenticatedOrReadOnly, MainSalesForcePermissionClass
+        IsAuthenticatedOrReadOnly,
+        MainSalesForcePermissionClass,
     ]
 
 
@@ -42,16 +43,11 @@ class SalesForceStatsViewSet(viewsets.ViewSet):
     def get_expired_tickets(self):
         unfinished_tickets = self.queryset.filter(is_done=False)
         current_datetime = datetime.datetime.now()
-        expired_tickets: list[str] = []
-
-        for ticket in unfinished_tickets:
-            days_7 = datetime.timedelta(days=7)
-            creation_datetime = ticket.creation_timestamp.replace(tzinfo=None)
-
-            if current_datetime - creation_datetime >= days_7:
-                expired_tickets.append(ticket.salesforce_number)
-
-        return expired_tickets
+        return [
+            ticket.salesforce_number for ticket in unfinished_tickets
+            if current_datetime - ticket.creation_timestamp.replace(tzinfo=None)
+            >= datetime.timedelta(days=7)
+        ]
 
     def list(self, request: Request):
         total_tickets = self.queryset.count()
