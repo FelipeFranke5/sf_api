@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 
-def validate_salesforce_has_4_digits_only(value: str):
+def validate_salesforce_has_6_digits_only(value: str):
     value_length = len(value)
 
     if value_length != 6:
