@@ -103,6 +103,7 @@ INSTALLED_APPS = [
     # Third-Party
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_crontab',
     # My Apps
     'salesforce',
 ]
@@ -231,3 +232,8 @@ EMAIL_PORT = int(MAIL_PORT)
 EMAIL_USE_TLS = bool(int(MAIL_TLS))
 EMAIL_USE_SSL = bool(int(MAIL_SSL))
 EMAIL_SECURE_ADD1 = MAIL_SECURE_ADD1
+
+# Set up Cron Jobs
+CRONJOBS = [
+    ('* 6 * * *', 'salesforce.management.commands.salesforce_log')
+]
