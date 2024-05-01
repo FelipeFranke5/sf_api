@@ -18,35 +18,19 @@ class Command(BaseCommand):
         *args: Any,
         **options: dict[str, Any],
     ):
-        current_time = datetime.now()
-        self.stdout.write(
-            msg='--NOTIFICATION SENDER LOG: TRIGGERED'
-        )
-        self.stdout.write(
-            msg=f'--NOTIFICATION SENDER LOG: CURRENT HOUR: {current_time.hour}'
-        )
+        notification_result = self.send_notification()
 
-        if current_time.hour == 6:
+        if notification_result > 0:
             self.stdout.write(
-                msg='--NOTIFICATION SENDER LOG: ATTEMPTING TO SEND EMAIL'
+                self.style.SUCCESS(
+                    '--NOTIFICATION SENDER LOG: EMAIL SENT SUCCESSFULLY'
+                )
             )
-            notification_result = self.send_notification()
-
-            if notification_result > 0:
-                self.stdout.write(
-                    self.style.SUCCESS(
-                        '--NOTIFICATION SENDER LOG: EMAIL SENT SUCCESSFULLY'
-                    )
-                )
-            else:
-                self.stdout.write(
-                    self.style.ERROR(
-                        '--NOTIFICATION SENDER LOG: FAILED TO SEND EMAIL'
-                    )
-                )
         else:
             self.stdout.write(
-                msg='--NOTIFICATION SENDER LOG: CANNOT SEND EMAIL RIGHT NOW'
+                self.style.ERROR(
+                    '--NOTIFICATION SENDER LOG: FAILED TO SEND EMAIL'
+                )
             )
 
     def send_notification(self):

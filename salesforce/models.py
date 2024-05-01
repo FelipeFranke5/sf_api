@@ -4,7 +4,7 @@ from django.db import models
 
 from .validators import (validate_each_char_is_digit,
                          validate_establishment_code_has_10_digits_only,
-                         validate_salesforce_has_6_digits_only)
+                         validate_salesforce_has_8_digits_only)
 
 
 class SalesForce(models.Model):
@@ -15,12 +15,12 @@ class SalesForce(models.Model):
     )
     salesforce_number = models.CharField(
         verbose_name='SalesForce Number',
-        help_text='Insert the SF number (6 digits)',
+        help_text='Insert the SF number (8 digits)',
         validators=[
-            validate_salesforce_has_6_digits_only,
+            validate_salesforce_has_8_digits_only,
             validate_each_char_is_digit,
         ],
-        max_length=6,
+        max_length=8,
         unique=True,
     )
     establishment_code = models.CharField(
