@@ -2,13 +2,13 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 
-def validate_salesforce_has_6_digits_only(value: str):
+def validate_salesforce_has_8_digits_only(value: str):
     value_length = len(value)
 
-    if value_length != 6:
+    if value_length != 8:
         raise ValidationError(
             message=_(
-                f'expected 6 characters but received {value_length} instead'
+                f'expected 8 characters but received {value_length} instead'
             ),
             params={'value': value},
         )

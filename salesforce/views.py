@@ -1,14 +1,11 @@
 import datetime
 
 from django.utils.translation import gettext as _
-from drf_excel.mixins import XLSXFileMixin
-from drf_excel.renderers import XLSXRenderer
 from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from . import excel_styling
 from .models import SalesForce
 from .permissions import MainSalesForcePermissionClass
 from .serializers import SalesForceSerializer
@@ -22,23 +19,25 @@ class MainSalesForceViewSet(viewsets.ModelViewSet):
         MainSalesForcePermissionClass,
     ]
 
+    def list(self, request: Request, *args, **kwargs):
+        queryset = self.queryset.filter(is_done=False)
 
-class SalesForceExcelViewSet(XLSXFileMixin, viewsets.ReadOnlyModelViewSet):
-    serializer_class = SalesForceSerializer
-    queryset = SalesForce.objects.filter(is_done=False).order_by(
-        '-creation_timestamp'
-    )
-    renderer_classes = [XLSXRenderer]
-    filename = f'SF - {datetime.datetime.now()}.xlsx'
-    column_header = excel_styling.get_column_header()
-    body = excel_styling.get_body()
-    xlsx_ignore_headers = excel_styling.get_xlsx_ignore_headers()
-    xlsx_boolean_labels = {True: _('true'), False: _('false')}
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class SalesForceStatsViewSet(viewsets.ViewSet):
     serializer_class = SalesForceSerializer
     queryset = SalesForce.objects.all().order_by('-creation_timestamp')
+    permission_classes = [
+        IsAuthenticatedOrReadOnly,
+        MainSalesForcePermissionClass,
+    ]
 
     def get_expired_tickets(self):
         unfinished_tickets = self.queryset.filter(is_done=False)
